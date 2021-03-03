@@ -5,8 +5,9 @@
                 key-field="Id"
                 data={contacts.data}
                 columns={columns}
-                onrowselection={showToast}
                 onrowaction={handleRowAction}
+                hide-checkbox-column="true"
+                show-row-number-column="true"
             >
            </lightning-datatable>
         </template>
