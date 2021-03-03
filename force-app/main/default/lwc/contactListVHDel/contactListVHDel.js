@@ -18,10 +18,7 @@ const COLUMNS = [
             title: 'Delete',
             variant: 'border-filled',
             alternativeText: 'delete',
-            disabled: false,
-            onclick: ()=> {
-               console.log("deleted");
-            }
+            disabled: false
         },
     }
 ];
@@ -32,7 +29,14 @@ export default class ContactList extends LightningElement {
      @wire(getContacts)
      contacts;
 
- 
+     handleRowAction(event) {
+        const row = event.detail.row;
+        const evDel = new ShowToastEvent({
+            "title": "Deleted!",
+            "variant": "Success"
+             });
+        this.dispatchEvent(evDel);
+    }
 
     get errors() {
           return (this.contacts.error) ?
