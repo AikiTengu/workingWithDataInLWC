@@ -9,14 +9,16 @@ const COLUMNS = [
     { label: 'Second Name', fieldName: LASTNAME_FIELD.fieldApiName, type: 'text' },
     { label: 'Email', fieldName: EMAIL_FIELD.fieldApiName, type: 'text' }
 ];
+
 export default class ContactList extends LightningElement {
     columns = COLUMNS;
     @wire(getContacts)
     contacts;
 
-    get errors() {
-        return (this.contacts.error) ?
-            reduceErrors(this.contacts.error) : [];
-    }
+
+     get errors() {
+         return (this.contacts.error) ?
+             reduceErrors(this.contacts.error) : [];
+     }
 
 }
