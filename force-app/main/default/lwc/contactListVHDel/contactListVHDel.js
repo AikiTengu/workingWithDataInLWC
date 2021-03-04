@@ -1,4 +1,4 @@
-import { LightningElement, track, wire } from "lwc";
+import { LightningElement, wire } from "lwc";
 import { reduceErrors } from "c/ldsUtils";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { refreshApex } from "@salesforce/apex";
@@ -9,7 +9,7 @@ import getContacts from "@salesforce/apex/ContactController.getContacts";
 import deleteContact from "@salesforce/apex/ContactController.deleteContact";
 
 export default class ContactList extends LightningElement {
-columns = [
+	columns = [
 		{ label: "First Name", fieldName: FIRSTNAME_FIELD.fieldApiName, type: "text" },
 		{ label: "Second Name", fieldName: LASTNAME_FIELD.fieldApiName, type: "text" },
 		{ label: "Email", fieldName: EMAIL_FIELD.fieldApiName, type: "text" },
@@ -28,15 +28,12 @@ columns = [
 		}
 	];
 
-
-	 @wire(getContacts)
-	 contacts;
-
-
+	@wire(getContacts)
+	contacts;
 
 	fireDeleteRow(event) {
 		let contactId = event.detail.row.Id;
-	
+
 		deleteContact({ contactToDeleteId: contactId })
 			.then(() => {
 				this.dispatchEvent(
