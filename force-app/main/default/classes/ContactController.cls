@@ -4,23 +4,34 @@ public inherited sharing class ContactController {
         return [
             SELECT FirstName, LastName, Email
             FROM Contact
-            WITH SECURITY_ENFORCED
             ORDER BY Name
         ];
         //used to work with reducing errors
        // throw new AuraHandledException('Forced error');
     }
 
-    @AuraEnabled
-    public static void deleteContact(Id ContactId) {
-        Contact contactToDelete = [
-            SELECT Name FROM Contact WHERE Id=:ContactId
-        ];
-
-        delete contactToDelete;
-        
-
-        //used to work with reducing errors
-       // throw new AuraHandledException('Forced error');
+     @AuraEnabled
+     public static void deleteContact(String contactToDeleteId) {
+        try {
+            Contact contact = [
+                SELECT Id, FirstName
+                FROM Contact
+                WHERE Id = :contactToDeleteId
+            ];
+            List<Case> caseList = [ 
+                SELECT Id 
+                FROM Case
+                WHERE Contact.Id = :contactToDeleteId
+                ];
+            if (!caseList.isEmpty()) {
+                for (Case caseItem : caseList) {
+                    caseItem.ContactId = null;
+                    }
+                update caseList;
+                }
+                delete contact;
+        } catch (Exception e) {
+        throw new AuraHandledException(e.getMessage());
+        } 
     }
 }
