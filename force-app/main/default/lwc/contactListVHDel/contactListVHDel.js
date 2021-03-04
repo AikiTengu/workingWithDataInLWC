@@ -1,11 +1,12 @@
 import { LightningElement, wire} from 'lwc';
 import { reduceErrors } from 'c/ldsUtils';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { deleteRecord } from 'lightning/uiRecordApi';
 import FIRSTNAME_FIELD from '@salesforce/schema/Contact.FirstName';
 import LASTNAME_FIELD from '@salesforce/schema/Contact.LastName';
 import EMAIL_FIELD from '@salesforce/schema/Contact.Email';
 import getContacts from '@salesforce/apex/ContactController.getContacts';
-import deleteContact from '@salesforce/apex/ContactController.deleteContact';
+
 
 export default class ContactList extends LightningElement {
 
@@ -36,7 +37,27 @@ export default class ContactList extends LightningElement {
     fireDeleteRow(event) {
         let contactId = event.detail.row.Id;
 
-        deleteContact(contactId);
+        deleteRecord(contactId)
+        .then(() => {
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: 'Contact deleted',
+                    message: `Record ID ${contactId}`,
+                    variant: 'success'
+                })
+            )
+        })
+        .catch(error => {
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: `Error deleting contact ${contactId}`,
+                    message: error.body.message,
+                    variant: 'error'
+                })
+            )
+        })
+        
+    
         // console.log(this.contacts.data);
         // console.log("Tuhesfilter at work: " + contactId);
         // let c2 = c2.filter((Contact) => {
@@ -45,13 +66,14 @@ export default class ContactList extends LightningElement {
 
         // console.log(c2.data);
 
-        this.showToast(contactId + " deleted");
+        
     }
 
-    showToast(msg) {
+    showErr(msg) {
         const evDel = new ShowToastEvent({
-            "title": msg,
-            "variant": "Success"
+            "title": "Error deleting contact",
+            "variant": "error",
+            "message": msg
              });
         this.dispatchEvent(evDel);
     }
