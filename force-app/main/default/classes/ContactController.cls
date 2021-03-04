@@ -10,4 +10,17 @@ public inherited sharing class ContactController {
         //used to work with reducing errors
        // throw new AuraHandledException('Forced error');
     }
+
+    @AuraEnabled
+    public static void deleteContact(Id ContactId) {
+        Contact contactToDelete = [
+            SELECT Name FROM Contact WHERE Id=:ContactId
+        ];
+
+        delete contactToDelete;
+        
+
+        //used to work with reducing errors
+       // throw new AuraHandledException('Forced error');
+    }
 }
