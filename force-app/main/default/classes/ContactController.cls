@@ -6,18 +6,16 @@ public inherited sharing class ContactController {
             FROM Contact
             ORDER BY Name
         ];
-        //used to work with reducing errors
-       // throw new AuraHandledException('Forced error');
     }
 
      @AuraEnabled
      public static void deleteContact(String contactToDeleteId) {
         try {
-            Contact contact = [
-                SELECT Id, FirstName
-                FROM Contact
-                WHERE Id = :contactToDeleteId
-            ];
+             Contact contact = [
+                 SELECT Id
+                 FROM Contact
+                 WHERE Id = :contactToDeleteId
+             ];
             List<Case> caseList = [ 
                 SELECT Id 
                 FROM Case
@@ -29,6 +27,7 @@ public inherited sharing class ContactController {
                     }
                 update caseList;
                 }
+
                 delete contact;
         } catch (Exception e) {
         throw new AuraHandledException(e.getMessage());
