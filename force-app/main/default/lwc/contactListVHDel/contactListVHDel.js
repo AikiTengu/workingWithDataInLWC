@@ -1,7 +1,7 @@
-import { LightningElement, wire } from "lwc";
+import { LightningElement, track, wire } from "lwc";
 import { reduceErrors } from "c/ldsUtils";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
-import { deleteRecord } from "lightning/uiRecordApi";
+import { refreshApex } from "@salesforce/apex";
 import FIRSTNAME_FIELD from "@salesforce/schema/Contact.FirstName";
 import LASTNAME_FIELD from "@salesforce/schema/Contact.LastName";
 import EMAIL_FIELD from "@salesforce/schema/Contact.Email";
@@ -9,7 +9,7 @@ import getContacts from "@salesforce/apex/ContactController.getContacts";
 import deleteContact from "@salesforce/apex/ContactController.deleteContact";
 
 export default class ContactList extends LightningElement {
-	columns = [
+columns = [
 		{ label: "First Name", fieldName: FIRSTNAME_FIELD.fieldApiName, type: "text" },
 		{ label: "Second Name", fieldName: LASTNAME_FIELD.fieldApiName, type: "text" },
 		{ label: "Email", fieldName: EMAIL_FIELD.fieldApiName, type: "text" },
@@ -28,13 +28,16 @@ export default class ContactList extends LightningElement {
 		}
 	];
 
-	@wire(getContacts)
-	contacts;
+
+	 @wire(getContacts)
+	 contacts;
+
+
 
 	fireDeleteRow(event) {
 		let contactId = event.detail.row.Id;
-
-		deleteContact( {contactToDeleteId: contactId})
+	
+		deleteContact({ contactToDeleteId: contactId })
 			.then(() => {
 				this.dispatchEvent(
 					new ShowToastEvent({
@@ -43,6 +46,7 @@ export default class ContactList extends LightningElement {
 						variant: "success"
 					})
 				);
+				refreshApex(this.contacts);
 			})
 			.catch((error) => {
 				this.dispatchEvent(
@@ -53,23 +57,6 @@ export default class ContactList extends LightningElement {
 					})
 				);
 			});
-
-		// console.log(this.contacts.data);
-		// console.log("Tuhesfilter at work: " + contactId);
-		// let c2 = c2.filter((Contact) => {
-		//      return Contact.LastName !== "Caroline";
-		//  });
-
-		// console.log(c2.data);
-	}
-
-	showErr(msg) {
-		const evDel = new ShowToastEvent({
-			title: "Error deleting contact",
-			variant: "error",
-			message: msg
-		});
-		this.dispatchEvent(evDel);
 	}
 
 	get errors() {
