@@ -1,6 +1,7 @@
 import { LightningElement, wire } from "lwc";
 import { reduceErrors } from "c/ldsUtils";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
+import { deleteRecord } from "lightning/uiRecordApi";
 import FIRSTNAME_FIELD from "@salesforce/schema/Contact.FirstName";
 import LASTNAME_FIELD from "@salesforce/schema/Contact.LastName";
 import EMAIL_FIELD from "@salesforce/schema/Contact.Email";
@@ -33,7 +34,7 @@ export default class ContactList extends LightningElement {
 	fireDeleteRow(event) {
 		let contactId = event.detail.row.Id;
 
-		deleteContact(contactId)
+		deleteContact( {contactToDeleteId: contactId})
 			.then(() => {
 				this.dispatchEvent(
 					new ShowToastEvent({
